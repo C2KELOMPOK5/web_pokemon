@@ -27,7 +27,6 @@ if(isset($_SESSION['username'])) {
 } else {
   $_SESSION['username'] = "login_dulu";
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -49,7 +48,9 @@ if(isset($_SESSION['username'])) {
         </nav>
       </header>
       <main>
+      <div ><button class="keluar-button" id="log_out">Keluar</button></div>
         <h2 class="animate__animated animate__fadeInUp" id="judul_koleksi">KOLEKSI KARTU ANDA</h2>
+        
         <div>
             <label class="animate__animated animate__fadeInUp sorting" >
               <input type="radio" name="sort" value="desc" >
@@ -61,7 +62,7 @@ if(isset($_SESSION['username'])) {
             </label>
           </div>
           
-        <div class="animate__animated animate__fadeInUp">
+        <div class="list-kartu animate__animated animate__fadeInUp">
         <img class="animate__animated animate__fadeInUp" src="card/mewtwoimg.jpg" alt="MewTwo"style="display:none;">
         <img class="animate__animated animate__fadeInUp" src="card/dragweb.jpg" alt="Dragonite"style="display:none;">
         <img class="animate__animated animate__fadeInUp" src="card/pikachucard.jpg" alt="Pikachu"style="display:none;">
@@ -77,7 +78,7 @@ if(isset($_SESSION['username'])) {
          
         </div>
         <div class="container_koleksi animate__animated animate__fadeInUp">
-        
+        </div>
           
       </main>
 
@@ -87,8 +88,8 @@ const container = document.querySelector('.container_koleksi');
 const allCards = <?php echo json_encode($_SESSION["cards"]); ?> || [];
 const numOfCards = allCards.length;
 const radioBox = document.getElementsByName('sort');
-console.log(allCards);
-
+const allCardList = <?php echo json_encode($_SESSION["Data_Kartu"]); ?> || [];
+buatKartuBaru() ;
 function sortCards() {
   const selectedSort = document.querySelector('input[name="sort"]:checked').value;
   allCards.sort((a, b) => {
@@ -100,7 +101,7 @@ function sortCards() {
   });
   for (let i = 0; i < allCards.length; i++) {
     const card = allCards[i];
-    console.log(allCards[i]);
+    
     const altValue = card.kartu;
     const imgElement = document.querySelector(`img[alt="${altValue}"]`);
     if (imgElement) {
@@ -115,8 +116,6 @@ function sortCards() {
     }
   }
 }
-
-// Set up the initial display
 container.style.display = 'flex';
 container.style.flexDirection = 'row';
 for (let i = 0; i < numOfCards; i++) {
@@ -132,14 +131,16 @@ for (let i = 0; i < numOfCards; i++) {
   imageContainer.appendChild(imageElement);
   container.appendChild(imageContainer);
 }
-
 for (let i = 0; i < allCards.length; i++) {
   const card = allCards[i];
   const altValue = card.kartu;
   const imgElement = document.querySelector(`img[alt="${altValue}"]`);
   if (imgElement) {
+    console.log(imgElement);
     const srcValue = imgElement.getAttribute('src');
     const imgId = `img${card.id}`;
+
+    console.log(card.id);
     const targetImgElement = document.getElementById(imgId);
     if (targetImgElement) {
       targetImgElement.setAttribute('src', srcValue);
@@ -147,12 +148,60 @@ for (let i = 0; i < allCards.length; i++) {
   }
 }
 
+
+function buatKartuBaru() {
+  allCardList.forEach(function(card) {
+    if (card.link) {
+      const containerListKartu = document.querySelector('.list-kartu');
+      const newImg= document.createElement('img');
+
+      newImg.setAttribute('src', card.link);
+      newImg.setAttribute('alt', card.nama_kartu);
+      newImg.style.display = 'none';
+        console.log(card.link + " ini")
+      containerListKartu.appendChild(newImg);
+    }
+  });
+}
 radioBox.forEach(radio => {
   radio.addEventListener('change', sortCards);
+
+
+
+document.addEventListener('copy', function(event) {
+  event.preventDefault();
+  
+});
+
+document.addEventListener('selectstart', function(e) {
+  e.preventDefault();
+});
 });
 
 
 
+const imageContainers = document.querySelectorAll('.image_container_koleksi');
+for (let i = 0; i < imageContainers.length; i++) {
+  const img = imageContainers[i].querySelector('img');
+  if (img.getAttribute('src') === '') {
+    imageContainers[i].classList.remove('image_container_koleksi');
+    const imgContainerImgs = imageContainers[i].querySelectorAll('img');
+    for (let j = 0; j < imgContainerImgs.length; j++) {
+      imageContainers[i].removeChild(imgContainerImgs[j]);
+      imageContainers[i].style.display = "none";
+    }
+  }
+}
 
+
+
+
+document.getElementById("log_out").addEventListener("click", function(event){
+			event.preventDefault();
+			var result = confirm("Apakah Anda yakin ingin meninggalkan permainan?");
+			if (result) {
+				window.location.href = "index.php";
+			}
+		});
 </script>
 </html>

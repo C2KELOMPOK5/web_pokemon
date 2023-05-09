@@ -109,17 +109,46 @@ if ($result_reset->num_rows > 0) {
     var slideIndex = 0;
       let isGachaClicked = false;
       let timeout;
-      function speedSlides() {
+
+
+      const allCards = <?php echo json_encode($_SESSION["Data_Kartu"]); ?> || [];
+const numOfCards = allCards.length;
+
+
+       
+        for (let i = 0; i < allCards.length; i++) {
+              const card = allCards[i];
+              if(card.link!="null"){
+    
+              const containerListKartu = document.querySelector('.slideshow-container ');
+              const newImg = document.createElement('img');
+              
+              newImg.setAttribute('src', card.link);
+              newImg.setAttribute('alt', card.nama_kartu);
+              
+              containerListKartu.appendChild(newImg);
+          }
+        }
+
+      
+     function speedSlides() {
   var i;
   var slides = document.getElementsByClassName("slideshow-container")[0].getElementsByTagName("img");
-  var randomIndex = Math.floor(Math.random() * slides.length);
+  var validSlides = [];
   for (i = 0; i < slides.length; i++) {
-    slides[i].className = "";
+    if (slides[i].getAttribute("src") !== "null") {
+      validSlides.push(slides[i]);
+    }
+  }
+  var randomIndex = Math.floor(Math.random() * validSlides.length);
+  for (i = 0; i < validSlides.length; i++) {
+    validSlides[i].className = "";
   }
   slideIndex = randomIndex + 1;
-  slides[randomIndex].className = "active";
+  validSlides[randomIndex].className = "active";
   timeout = setTimeout(speedSlides, 500);
 }
+
 
       
       
@@ -170,6 +199,36 @@ document.getElementById("log_out").addEventListener("click", function(event){
     const current_user = sessionStorage.getItem("current_user");
 
   document.getElementById('nama').textContent = current_user.toUpperCase();
+  
+
+document.addEventListener('copy', function(event) {
+  event.preventDefault();
+  
+});
+
+document.addEventListener('selectstart', function(e) {
+  e.preventDefault();
+});
+function buatKartuBaru(){
+  for (let i = 0; i < allCards.length; i++) {
+  const card = allCards[i];
+  
+  if(card.link){
+    console.log(card);
+    const cardLink = card.link;
+    const cardName = card.nama_kartu;
+    const containerListKartu = document.querySelector('.list-kartu');
+    const newImg = document.createElement('img');
+    newImg.classList.add('animate__animated', 'animate__fadeInUp');
+    newImg.setAttribute('src', cardLink);
+    newImg.setAttribute('alt', cardName);
+    newImg.style.display = 'none';
+  
+    containerListKartu.appendChild(newImg);
+  }
+}
+
+}
         </script>
 </body>
 </html>
