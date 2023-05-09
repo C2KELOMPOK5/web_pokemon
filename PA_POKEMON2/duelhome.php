@@ -7,6 +7,7 @@ if ($_SESSION["username"]=="login_dulu"){
 $_SESSION["gachaIsTrue"]="false";
 $yang_login = $_SESSION["username"];
 $sql = "SELECT id, kartu, overall FROM $yang_login";
+$_SESSION['view'] = "see";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
   $cards = array();
@@ -33,18 +34,23 @@ if ($result_reset->num_rows > 0) {
     <title>Document</title>
 </head>
 <body id="halaman_koleksi">
-    <header id="header_koleksi">
+    <header id="header_duel">
         <nav>
           <ul>
-            <li><a class="animate__animated animate__fadeInUp" href="duelhome.php">Duel</a></li>
+            <li><a class="animate__animated animate__fadeInUp" href="duelhome.php"  id="hal-duelhome">Duel</a></li>
             <li><a class= "animate__animated animate__fadeInUp"href="gacha.php" id="gacha_koleksi">Gacha</a></li>
-            <li><a class= "animate__animated animate__fadeInUp"href="koleksi.php" id="koleksi">Collection</a></li>
+            <li><a class= "animate__animated animate__fadeInUp"href="koleksi.php">Collection</a></li>
           </ul>
         </nav>
       </header>
       <main>
+        <div ><button class="keluar-button"  id ="log_out">Keluar</button></div>
         <h2 class="animate__animated animate__fadeInUp" id="judul_koleksi">PILIH KARTU</h2>
-      
+        <div>
+        <button id="show-history">
+          Lihat History
+        </button>
+       </div>
             <label class="animate__animated animate__fadeInUp sorting" >
               <input type="radio" name="sort" value="desc">
               Urutkan Kartu dari Overall Tertinggi
@@ -56,31 +62,31 @@ if ($result_reset->num_rows > 0) {
         
           <div>
          
-        <div class="animate__animated animate__fadeInUp" id="slideshow-container1" style="display:none;">
-        <img class="animate__animated animate__fadeInUp" src="card/mewtwoimg.jpg" alt="MewTwo"style="display:none;">
-        <img class="animate__animated animate__fadeInUp" src="card/dragweb.jpg" alt="Dragonite"style="display:none;">
-        <img class="animate__animated animate__fadeInUp" src="card/pikachucard.jpg" alt="Pikachu"style="display:none;">
-        <img class="animate__animated animate__fadeInUp" src="card/cropchar.gif" alt="Charizard"style="display:none;">
-        <img class="animate__animated animate__fadeInUp" src="card/zapdos.png" alt="Zapdos" style="display:none;">
-        <img class="animate__animated animate__fadeInUp" src="card/articuno.webp" alt="Articuno"style="display:none;">
-        <img class="animate__animated animate__fadeInUp" src="card/moltres.jpg" alt="Moltres"style="display:none;">
-        <img class="animate__animated animate__fadeInUp" src="card/bulba.png" alt="Bulbasaur"style="display:none;">   
-        <img class="animate__animated animate__fadeInUp" src="card/gyarados.webp" alt="Gyarados" style="display:none;">
-        <img class="animate__animated animate__fadeInUp" src="card/gengar.webp" alt="Gengar Max"style="display:none;">
-        <img class="animate__animated animate__fadeInUp" src="card/charzmax.png" alt="Charizard Max"style="display:none;">
-        <img class="animate__animated animate__fadeInUp" src="card/mew1.jpg" alt="Mew Max"style="display:none;">
+        <div class="list-kartu animate__animated animate__fadeInUp slideshow-container1" style="display:none;">
+        <img class="animate__animated animate__fadeInUp" src="card/mewtwoimg.jpg"id="slideshow-container1" alt="MewTwo"style="display:none;">
+        <img class="animate__animated animate__fadeInUp" src="card/dragweb.jpg"id="slideshow-container1" alt="Dragonite"style="display:none;">
+        <img class="animate__animated animate__fadeInUp" src="card/pikachucard.jpg"id="slideshow-container1" alt="Pikachu"style="display:none;">
+        <img class="animate__animated animate__fadeInUp" src="card/cropchar.gif"id="slideshow-container1" alt="Charizard"style="display:none;">
+        <img class="animate__animated animate__fadeInUp" src="card/zapdos.png"id="slideshow-container1" alt="Zapdos" style="display:none;">
+        <img class="animate__animated animate__fadeInUp" src="card/articuno.webp"id="slideshow-container1" alt="Articuno"style="display:none;">
+        <img class="animate__animated animate__fadeInUp" src="card/moltres.jpg"id="slideshow-container1" alt="Moltres"style="display:none;">
+        <img class="animate__animated animate__fadeInUp" src="card/bulba.png"id="slideshow-container1" alt="Bulbasaur"style="display:none;">   
+        <img class="animate__animated animate__fadeInUp" src="card/gyarados.webp"id="slideshow-container1" alt="Gyarados" style="display:none;">
+        <img class="animate__animated animate__fadeInUp" src="card/gengar.webp"id="slideshow-container1" alt="Gengar Max"style="display:none;">
+        <img class="animate__animated animate__fadeInUp" src="card/charzmax.png"id="slideshow-container1" alt="Charizard Max"style="display:none;">
+        <img class="animate__animated animate__fadeInUp" src="card/mew1.jpg"id="slideshow-container1" alt="Mew Max"style="display:none;">
          
         
         </div>
         <form action="arena.php" method="get">
-            <button id="confirm-button" type="submit" style="display:none;">Konfirmasi</button>
+            <button id="confirm-button1" type="submit" style="display:none;">Konfirmasi</button>
             <input type="hidden" name="data">
             <input type="hidden" name="dataOverall">
             </form>
 
         <div class="container_koleksi animate__animated animate__fadeInUp">
-       
-          
+      
+        
       </main>
 
 </body>
@@ -90,7 +96,8 @@ const allCards = <?php echo json_encode($_SESSION["cards"]); ?> || [];
 const numOfCards = allCards.length;
 const radioBox = document.getElementsByName('sort');
 const slideshowDiv = document.querySelector('.animate__animated.animate__fadeInUp');
-
+const allCardList = <?php echo json_encode($_SESSION["Data_Kartu"]); ?> || [];
+buatKartuBaru() ;
 function sortCards() {
   const selectedSort = document.querySelector('input[name="sort"]:checked').value;
   allCards.sort((a, b) => {
@@ -102,7 +109,7 @@ function sortCards() {
   });
   for (let i = 0; i < allCards.length; i++) {
     const card = allCards[i];
-    console.log(card.id);
+    
     const altValue = card.kartu;
     const imgElement = document.querySelector(`img[alt="${altValue}"]`);
     if (imgElement) {
@@ -118,7 +125,7 @@ function sortCards() {
     }
   }
 }
-// Set up the initial display
+
 container.style.display = 'flex';
 container.style.flexDirection = 'row';
 for (let i = 0; i < numOfCards; i++) {
@@ -134,7 +141,7 @@ for (let i = 0; i < numOfCards; i++) {
   imageContainer.appendChild(imageElement);
   container.appendChild(imageContainer);
 }
-let selectedCard = null;
+let selectedCard;
 
 for (let i = 0; i < allCards.length; i++) {
   const card = allCards[i];
@@ -155,13 +162,13 @@ for (let i = 0; i < allCards.length; i++) {
       buttonElement.textContent = "pilih" ;
       buttonElement.id="tombol-pilih";
       buttonElement.addEventListener('click', function() {
-        document.getElementById("slideshow-container1").style.display = "block";
-        document.getElementById("confirm-button").style.display = "block";
+        document.querySelector(".slideshow-container1").style.display = "block";
+        document.getElementById("confirm-button1").style.display = "block";
         selectedCard = card;
         console.log('Selected card ID:', selectedCard.id);
-        
+        console.log('tes',card.overall);
         const kartuaktif = selectedCard.kartu;
-        const slideshowContainer = document.getElementById('slideshow-container1');
+        const slideshowContainer = document.querySelector('.slideshow-container1');
         const slideshowImages = slideshowContainer.getElementsByTagName('img');
         
         for (let i = 0; i < slideshowImages.length; i++) {
@@ -170,8 +177,11 @@ for (let i = 0; i < allCards.length; i++) {
             image.style.display = "block";
             const dataInput = document.querySelector('input[name="data"]');
             dataInput.value = kartuaktif;
+            console.log(kartuaktif);
             const dataInputOverall = document.querySelector('input[name="dataOverall"]');
             dataInputOverall.value = selectedCard.overall;
+            console.log(selectedCard.overall);
+            scrollToTop();
           } else {
             image.style.display = "none";
           }
@@ -182,7 +192,7 @@ for (let i = 0; i < allCards.length; i++) {
     }
   }
 }
-const confirmButton = document.getElementById('confirm-button');
+const confirmButton = document.getElementById('confirm-button1');
 
 confirmButton.addEventListener('click', function() {
  
@@ -195,7 +205,68 @@ radioBox.forEach(radio => {
 });
 
 
+function scrollToTop() {
+  var currentPosition = document.documentElement.scrollTop || document.body.scrollTop;
+  if (currentPosition > 50) {
+    window.requestAnimationFrame(scrollToTop);
+    window.scrollTo(50, currentPosition - currentPosition / 80);
+  }
+}
 
 
+
+document.addEventListener('copy', function(event) {
+  event.preventDefault();
+  alert('Copying is not allowed on this website');
+});
+
+document.addEventListener('selectstart', function(e) {
+  e.preventDefault();
+});
+
+const tombol = document.getElementById("show-history");
+
+
+tombol.addEventListener("click", function() {
+  window.location.href = "history2.php";
+});
+
+
+function buatKartuBaru() {
+  allCardList.forEach(function(card) {
+    if (card.link) {
+      const containerListKartu = document.querySelector('.list-kartu');
+      const newImg= document.createElement('img');
+      
+      newImg.setAttribute('id', 'slideshow-container1');
+      newImg.setAttribute('src', card.link);
+      newImg.setAttribute('alt', card.nama_kartu);
+      newImg.style.display = 'none';
+      newImg.classList.add('animate__animated', 'animate__fadeInUp');
+       
+      containerListKartu.appendChild(newImg);
+    }
+  });
+}
+document.getElementById("log_out").addEventListener("click", function(event){
+			event.preventDefault();
+			var result = confirm("Apakah Anda yakin ingin meninggalkan permainan?");
+			if (result) {
+				window.location.href = "index.php";
+			}
+		});
+
+    const imageContainers = document.querySelectorAll('.image_container_koleksi');
+for (let i = 0; i < imageContainers.length; i++) {
+  const img = imageContainers[i].querySelector('img');
+  if (img.getAttribute('src') === '') {
+    imageContainers[i].classList.remove('image_container_koleksi');
+    const imgContainerImgs = imageContainers[i].querySelectorAll('img');
+    for (let j = 0; j < imgContainerImgs.length; j++) {
+      imageContainers[i].removeChild(imgContainerImgs[j]);
+      imageContainers[i].style.display = "none";
+    }
+  }
+}
 </script>
 </html>

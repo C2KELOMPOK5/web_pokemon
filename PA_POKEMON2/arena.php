@@ -4,8 +4,10 @@ session_start();
 if ($_SESSION["username"]=="login_dulu"){
   header("Location: login.php");
 }
+$_SESSION["bermain"]="playing";
 $yang_login = $_SESSION["username"];
 $picked = $_GET['data'];
+$_SESSION["kartu_user"] = $picked;
 $picked_ovr = $_GET['dataOverall'];
 $sql = "SELECT * FROM $yang_login WHERE kartu = '$picked'";
 $result = $conn->query($sql);
@@ -29,6 +31,8 @@ if ($result_search->num_rows > 0) {
   
 } else {
 }
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,16 +44,17 @@ if ($result_search->num_rows > 0) {
     <title>Document</title>
 </head>
 <body id="halaman_koleksi">
-    <header id="header_koleksi">
+    <header id="header_arena">
         <nav>
           <ul>
             <li><a class="animate__animated animate__fadeInUp" href="duelhome.php">Kembali</a></li>
-            <li><a class= "animate__animated animate__fadeInUp"href="arena.php" id="arena">Arena</a></li>
+            <li><a class= "animate__animated animate__fadeInUp"href="arena.php" id="hal-arena">Arena</a></li>
             <li><a class= "animate__animated animate__fadeInUp"href="history.php" >History</a></li>
           </ul>
         </nav>
       </header>
       <main>
+      
         <h2 class="animate__animated animate__fadeInUp" id="judul_koleksi"></h2>
         <div class="all-player">
         <div class="animate__animated animate__fadeInUp"id="nama-player1"></div>
@@ -58,7 +63,7 @@ if ($result_search->num_rows > 0) {
         
         </div>
         <div class="boxduel">
-        <div class="animate__animated animate__fadeInUp" id="container-player1" style="display:block;">
+        <div class="list-kartu animate__animated animate__fadeInUp" id="container-player1" style="display:block;">
         <img class="animate__animated animate__fadeInUp" src="card/mewtwoimg.jpg" alt="MewTwo"style="display:none;">
         <img class="animate__animated animate__fadeInUp" src="card/dragweb.jpg" alt="Dragonite"style="display:none;">
         <img class="animate__animated animate__fadeInUp" src="card/pikachucard.jpg" alt="Pikachu"style="display:none;">
@@ -77,7 +82,7 @@ if ($result_search->num_rows > 0) {
           
        
         <div class="animate__animated animate__fadeInUp"id="nama-player2"></div>
-       <div class="animate__animated animate__fadeInUp" id="container-player2" style="display:block;">
+       <div class="list-kartu2 animate__animated animate__fadeInUp" id="container-player2" style="display:block;">
        <img class="animate__animated animate__fadeInUp" src="card/mewtwoimg.jpg" alt="MewTwo"style="display:none;">
         <img class="animate__animated animate__fadeInUp" src="card/dragweb.jpg" alt="Dragonite"style="display:none;">
         <img class="animate__animated animate__fadeInUp" src="card/pikachucard.jpg" alt="Pikachu"style="display:none;">
@@ -95,19 +100,26 @@ if ($result_search->num_rows > 0) {
     
         
         </div>
-        <form action="duelpick.php" method="get">
-            <button id="confirm-button" type="submit" style="display:none;">Konfirmasi</button>
+        <form action="loadingduel.php" method="get">
+            <button id="confirm-button" type="submit" style="display:block;">Konfirmasi</button>
+            <input type="hidden" name="nama-lawan">
             <input type="hidden" name="data">
-            
+            <input type="hidden" name="dataOverall">
+            <input type="hidden" name="kartu-lawan">
             </form>
 
-        <div class="container_koleksi animate__animated animate__fadeInUp">
-       
-          
+       <!-- <div >
+        <button class="cari-lawan" id="cari-button"> CARI</button>
+       </div>
+           -->
       </main>
 
 </body>
 <script>
+
+const allCardList = <?php echo json_encode($_SESSION["Data_Kartu"]); ?> || [];
+buatKartuBaru() ;
+buatKartuBaru2();
 let startTime = Date.now();
 let endTime;
 let isGameOver = false;
@@ -127,13 +139,15 @@ function updateTime() {
   }
 }
 
+
+
 let timer = setInterval(updateTime, 100);
 sessionStorage.setItem('username', '<?php echo $_SESSION["username"]; ?>');
 const yangLogin = sessionStorage.getItem('username');
 const list_pemain = <?php echo json_encode($_SESSION["array_player"]); ?> || [];
 const numOfPlayer = list_pemain.length;
 
-
+function mulaiHalaman(){
 let myCard = {};
 for (let i = 0; i < list_pemain.length; i++) {
   const kartuPlayer = list_pemain[i];
@@ -190,66 +204,69 @@ const divNamaPlayer1 = document.getElementById("nama-player1");
 divNamaPlayer1.textContent = myCard.username;
 const divNamaPlayer2 = document.getElementById("nama-player2"); 
 divNamaPlayer2.textContent = lawan;
-console.log(lawan);
 
-let maxPlayer1 = myCard.overall;
-let maxPlayer2 = darahLawan;
-let player1Health = maxPlayer1; 
-let player2Health = maxPlayer2; 
 
-let player1HealthBar = document.createElement("div");
-player1HealthBar.className = "health-bar";
-player1HealthBar.style.width = (player1Health / maxPlayer1) * 100 + "%";
-let containerPlayer1 = document.getElementById("container-player1");
-containerPlayer1.appendChild(player1HealthBar);
-player1HealthBar.style.background = "linear-gradient(to left, #0B4B0B, #2E8B57)";
 
-let player2HealthBar = document.createElement("div");
-player2HealthBar.className = "health-bar";
-player2HealthBar.style.width = (player2Health / maxPlayer2) * 100 + "%";
-let containerPlayer2 = document.getElementById("container-player2");
-containerPlayer2.appendChild(player2HealthBar);
-player2HealthBar.style.background = "linear-gradient(to left, #0B4B0B, #2E8B57)";
+const dataInput = document.querySelector('input[name="nama-lawan"]');
+dataInput.value = lawan;
+const dataInput2 = document.querySelector('input[name="data"]');
+dataInput2.value = myCard.picked_card;
+const dataInputOverall = document.querySelector('input[name="dataOverall"]');
+dataInputOverall.value = myCard.overall;
+const dataInputKartuLawan = document.querySelector('input[name="kartu-lawan"]');
+dataInputKartuLawan.value = pickedCard;
 
-containerPlayer1.addEventListener("click", function() {
-    player1Health -= 20; 
-    if (player1Health < 0) player1Health = 0;
-    player1HealthBar.style.width = (player1Health / maxPlayer1) * 100 + "%"; 
-    if (player1Health > maxPlayer1) player1Health = maxPlayer1; 
+
+}
+mulaiHalaman();
+document.addEventListener('copy', function(event) {
+  event.preventDefault();
+  
 });
 
-containerPlayer2.addEventListener("click", function() {
-    player2Health -= 20; 
-    if (player2Health < 0) player2Health = 0; 
-    player2HealthBar.style.width = (player2Health / maxPlayer2) * 100 + "%"; 
-    if (player2Health > maxPlayer2) player2Health = maxPlayer2; 
+document.addEventListener('selectstart', function(e) {
+  e.preventDefault();
 });
-let containerPlayer11 = document.getElementById("container-player1");
-let containerPlayer22 = document.getElementById("container-player2");
 
-let overlayPlayer1 = document.createElement("div");
-overlayPlayer1.className = "overlay";
-containerPlayer11.appendChild(overlayPlayer1);
+// document.getElementById("cari-button").addEventListener("click", function(event){
+// 			event.preventDefault();
+			
+//     mulaiHalaman();
 
-let overlayPlayer2 = document.createElement("div");
-overlayPlayer2.className = "overlay";
-containerPlayer22.appendChild(overlayPlayer2);
-let containers = document.querySelectorAll(".boxduel > div");
-for (let i = 0; i < containers.length; i++) {
-  containers[i].addEventListener("click", function() {
-    // menonaktifkan klik selama animasi
-    this.style.pointerEvents = "none";
-    this.classList.add("shake");
-    this.classList.remove("animate__animated");
-    this.classList.remove("animate__fadeInUp");
-    
-    setTimeout(() => {
-      this.classList.remove("shake");
-      // mengaktifkan klik setelah animasi selesai
-      this.style.pointerEvents = "auto";
-    }, 500);
+
+			
+// 		});
+function buatKartuBaru() {
+  allCardList.forEach(function(card) {
+    if (card.link) {
+      const containerListKartu = document.querySelector('.list-kartu');
+      const newImg= document.createElement('img');
+      
+     
+      newImg.setAttribute('src', card.link);
+      newImg.setAttribute('alt', card.nama_kartu);
+      newImg.style.display = 'none';
+      newImg.classList.add('animate__animated', 'animate__fadeInUp');
+       
+      containerListKartu.appendChild(newImg);
+    }
   });
 }
-
+function buatKartuBaru2() {
+  allCardList.forEach(function(card) {
+    if (card.link) {
+      const containerListKartu = document.querySelector('.list-kartu2');
+      const newImg= document.createElement('img');
+      
+     
+      newImg.setAttribute('src', card.link);
+      newImg.setAttribute('alt', card.nama_kartu);
+      newImg.style.display = 'none';
+      newImg.classList.add('animate__animated', 'animate__fadeInUp');
+       
+      containerListKartu.appendChild(newImg);
+    }
+  });
+}
 </script>
 </html>

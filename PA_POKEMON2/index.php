@@ -34,8 +34,8 @@ if(isset($_SESSION['username'])) {
       </nav>
     </header>
     <main >
-      <div class="intro">
-        <h1 class ="animate__animated animate__fadeInUp">SELAMAT DATANG DI WEB POKEMON TRADING CARD</h1>
+      <div >
+        <h1 class ="animate__animated animate__fadeInUp intro">SELAMAT DATANG DI WEB POKEMON TRADING CARD</h1>
        
         <button class ="animate__animated animate__fadeInUp play-btn">Mainkan Sekarang</button>
         
@@ -49,7 +49,7 @@ if(isset($_SESSION['username'])) {
           <li class="animate__animated animate__fadeInUp">Lakukan Gacha Untuk Mendapatkan Koleksi Kartu Pokemon Langka</li>
         </ul>
     </div>
-      <div class="kartu">
+      <div class="kartu"> 
         <li></li>
         <img class="animate__animated animate__fadeInUp" src="card/mewtwoimg.jpg">
         <img class="animate__animated animate__fadeInUp" src="card/gengar.webp">
