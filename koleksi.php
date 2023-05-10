@@ -27,9 +27,9 @@ if ($result_reset->num_rows > 0) {
     <header id="header_duel">
         <nav>
           <ul>
-            <li><a class="animate__animated animate__fadeInUp" href="duelhome.php"  id="hal-duelhome">Duel</a></li>
+            <li><a class="animate__animated animate__fadeInUp" href="duelhome.php" >Duel</a></li>
             <li><a class= "animate__animated animate__fadeInUp"href="gacha.php" id="gacha_koleksi">Gacha</a></li>
-            <li><a class= "animate__animated animate__fadeInUp"href="koleksi.php">Collection</a></li>
+            <li><a class= "animate__animated animate__fadeInUp"href="koleksi.php" id="hal-duelhome">Collection</a></li>
           </ul>
         </nav>
       </header>
