@@ -7,21 +7,34 @@ if ($_SESSION["username"]=="login_dulu"){
 if ($_SESSION["gachaIsTrue"]=="false"){
   header("Location: gacha.php");
 }
-if(isset($_SESSION['username'])) {
+if (isset($_SESSION['username'])) {
   $yang_login = $_SESSION["username"];
   $query = "SELECT token FROM users WHERE username = '$yang_login'";
-  $result = mysqli_query($conn,$query);
+  $result = mysqli_query($conn, $query);
   $row = mysqli_fetch_assoc($result);
-  $token = $row['token'] - 50;
-  if($token <= 0) {
+  $token = $row['token'];
+  
+  if ($token >= 50) {
+    $token -= 50;
+    $update_token = "UPDATE users SET token = $token WHERE username = '$yang_login'";
+    $hasil = mysqli_query($conn, $update_token);
+    if ($hasil) {
+      $token = $row['token'] -50;
+      
+    } else {
+     
+      echo "<script>alert('Error saat melakukan pembayaran!');</script>";
+      header("Location: gacha.php");
+      exit;
+    }
+  } else {
+   
     echo "<script>alert('Token tidak cukup!');</script>";
     header("Location: gacha.php");
     exit;
-  } else {
-      $update_token = "UPDATE users SET token = $token WHERE username = '$yang_login'";
-      $hasil = mysqli_query($conn, $update_token);
   }
 }
+
 
 if(isset($_POST['activeImageAlt'])) {
   $activeImageAlt = $_POST['activeImageAlt'];
@@ -45,7 +58,11 @@ if ($result_reset->num_rows > 0) {
     $reset_update = "UPDATE list_yang_main SET ready ='no' where username = '$yang_login'";
     $conn->query($reset_update);
 } 
-
+$sql_update_link = "UPDATE $yang_login
+JOIN tabel_kartu ON  $yang_login.kartu = tabel_kartu.nama_kartu
+SET  $yang_login.link = tabel_kartu.link
+";
+$hasil_link = mysqli_query($conn, $sql_update_link);
 
 ?>
 

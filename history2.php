@@ -2,13 +2,13 @@
 
 require "koneksi.php";
 session_start();
-$sql = "SELECT @id:=@id+1 as id, h1.user AS user1, h2.user AS user2, h1.kartu_user AS kartu_user1, h2.kartu_user AS kartu_user2, h1.skor AS skor1, h2.skor AS skor2, h1.jam AS jam_user1, h2.jam AS jam_user2, h1.tanggal AS tanggal_user1,h2.tanggal AS tanggal_user2
+$sql = "SELECT DISTINCT @id:=@id+1 as id, h1.user AS user1, h2.user AS user2, h1.kartu_user AS kartu_user1, h2.kartu_user AS kartu_user2, h1.skor AS skor1, h2.skor AS skor2, h1.jam AS jam_user1, h2.jam AS jam_user2, h1.tanggal AS tanggal_user1, h2.tanggal AS tanggal_user2
 FROM tes_history h1
 JOIN tes_history h2 ON h1.user = h2.nama_lawan AND h1.nama_lawan = h2.user AND h1.kartu_user = h2.kartu_lawan AND h1.kartu_lawan = h2.kartu_user, (SELECT @id:=0) as t
-WHERE h1.kondisi = 'selesai' AND h2.kondisi = 'selesai'
-";
+WHERE h1.kondisi = 'selesai' AND h2.kondisi = 'selesai' AND h1.skor < h2.skor";
 
 $result = $conn->query($sql);
+
 
 if ($result->num_rows > 0) {
   $history_result= array();
@@ -31,6 +31,7 @@ if ($result->num_rows > 0) {
 } else {
  
 }
+
 
 
 ?>
@@ -100,8 +101,6 @@ const new_history_result = [];
 
 for (let i = 0; i < historyResult.length; i++) {
   history_dict = historyResult[i];
-
-  if (history_dict.id % 2 === 1) {
     new_history_dict = {
       "id": history_dict.id,
       "user1": history_dict.user1,
@@ -116,7 +115,7 @@ for (let i = 0; i < historyResult.length; i++) {
       "tanggal_user2": history_dict.tanggal_user2
     };
     new_history_result.push(new_history_dict);
-  }
+  
 }
 
 const container = document.querySelector('.container-history');
@@ -142,7 +141,7 @@ for (let i = 0; i < new_history_result.length; i++) {
   const boxDalam2 = document.createElement("div");
   boxDalam2.classList.add("box-dalam2");
 
-
+  
   const kartuUser1 = history_dict.kartu_user1;
   const alt = document.querySelector(`img[alt="${kartuUser1}"]`);
   const gambar = document.createElement("img");
@@ -158,11 +157,19 @@ for (let i = 0; i < new_history_result.length; i++) {
   gambar2.src = alt2.src;
   boxDalam2.appendChild(gambar2);
   
-
+  
   const showVsHistory = document.createElement("div");
   showVsHistory.classList.add("show_vs_history");
   showVsHistory.innerText = "VS";
 
+  
+  const yangMenang = document.createElement("div");
+  yangMenang.classList.add("yangMenang");
+  yangMenang.innerText = history_dict.user1;
+
+  const tampilWin = document.createElement("div");
+  tampilWin.classList.add("tampilWin");
+  tampilWin.innerText = "WINS";
   const skorHistory1 = document.createElement("div");
   skorHistory1.classList.add("skor_history1");
   skorHistory1.innerText = history_dict.skor1;
@@ -195,7 +202,7 @@ for (let i = 0; i < new_history_result.length; i++) {
   showTanggal2.classList.add("show-tanggal2");
   showTanggal2.innerText = `Tanggal : ${history_dict.tanggal_user2}`;
 
-  box.append(namaPlayer1, namaPlayer2, boxDalam, boxDalam2, showVsHistory, skorHistory1, skorHistory2,tampilDetik1,tampilDetik2, showDetik, showDetik2, showTanggal, showTanggal2);
+  box.append(namaPlayer1, namaPlayer2, boxDalam, boxDalam2, showVsHistory, skorHistory1, skorHistory2,tampilDetik1,tampilDetik2, showDetik, showDetik2, showTanggal, showTanggal2,yangMenang,tampilWin);
   container.appendChild(box);
 }
 
@@ -223,13 +230,6 @@ const showTutorBtn = document.getElementById('showTutorBtn');
     }
   });
 }
-
-
-
-
-
-
-
   </script>
 </body>
 <style>

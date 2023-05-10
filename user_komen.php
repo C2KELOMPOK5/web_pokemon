@@ -43,7 +43,7 @@ if(isset($_POST['submit-komen'])) {
 			<ul>
 				<li><a class="animate__animated animate__fadeInUp" href="gacha.php">Kembali</a></li>
 				<li><a class="animate__animated animate__fadeInUp" href="user_komen.php" id="login_button">Komentar</a></li>
-				<li><a class="animate__animated animate__fadeInUp" href="register.php"></a></li>
+				<li><a class="animate__animated animate__fadeInUp" href="gacha.php">Kembali</a></li>
 			</ul>
 		</nav>
 	</header>

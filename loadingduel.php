@@ -25,7 +25,8 @@ $url = "arena2.php?" . http_build_query(array(
 
 
 ));
-$sql_updatePlay = "UPDATE list_yang_main SET playing = 'yes' WHERE username = '$yang_login'";
+
+$sql_updatePlay = "UPDATE list_yang_main SET playing = 'yes',enemy = '$lawan_picked',kartu_enemy='$picked_lawan' WHERE username = '$yang_login'";
 $result_play = mysqli_query($conn,$sql_updatePlay);
 
 $sql_search = "SELECT COUNT(*) AS jumlah
@@ -34,6 +35,9 @@ WHERE username = '$lawan_picked'
   AND ready = 'yes' 
   AND playing = 'yes' 
   AND picked_card = '$picked_lawan'
+  AND enemy ='$yang_login'
+  AND kartu_enemy ='$picked'
+
 
 ";
 

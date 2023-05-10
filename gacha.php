@@ -6,6 +6,11 @@ if ($_SESSION["username"]=="login_dulu"){
 }
 $_SESSION["gachaIsTrue"]="true";
 $yang_login = $_SESSION["username"];
+$sql_update_link = "UPDATE $yang_login
+JOIN tabel_kartu ON  $yang_login.kartu = tabel_kartu.nama_kartu
+SET  $yang_login.link = tabel_kartu.link
+";
+$hasil_link = mysqli_query($conn, $sql_update_link);
 $query = "SELECT token FROM users WHERE username = '$yang_login'";
 $result = mysqli_query($conn,$query);
 $row1 = mysqli_fetch_assoc($result);
@@ -25,11 +30,7 @@ if ($result) {
   $_SESSION["Data_Kartu"] = $data_kartu;
 } else {
 }
-$sql_update_link = "UPDATE $yang_login
-JOIN tabel_kartu ON  $yang_login.kartu = tabel_kartu.nama_kartu
-SET  $yang_login.link = tabel_kartu.link
-";
-$hasil_link = mysqli_query($conn, $sql_update_link);
+
 
 
 
