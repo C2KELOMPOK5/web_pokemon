@@ -1,6 +1,9 @@
 # web_pokemon
 https://www.canva.com/design/DAFgExZjGK0/FKNcvnZFt_vS-mEkS1TTHA/edit?analyticsCorrelationId=47fb2103-bd93-4d4f-8500-703c03671591
 
+link hosting
+webpokemonfinal.epizy.com
+
 Tutorial lengkap web dapat dilihat pada link canva dan pdf yang terlampir pada gc.
 
 Web Pokemon Trading Card ini adalah sebuah web interaktif dimana user didalamnya dapat bermain dan bersaing bersama user lain.
